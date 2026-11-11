@@ -34,6 +34,8 @@ watch(collection, () => fieldDetail.update({ collection: collection.value.collec
 
 const { interfaces } = useExtensions();
 
+const chosenInterface = syncFieldDetailStoreProperty('field.meta.interface');
+
 const interfacesSorted = computed(() => {
 	return orderBy(
 		interfaces.value.filter((inter) => !inter.system),
@@ -84,12 +86,14 @@ const groups = computed(() => {
 		if (!search.value) return filteredInterfaces;
 		const searchValue = search.value!.toLowerCase();
 		return filteredInterfaces.filter(
-			(inter) => inter.id.toLowerCase().includes(searchValue) || inter.name.toLowerCase().includes(searchValue),
+			(inter) =>
+				// Keep the chosen interface visible, e.g. after it was switched automatically (m2m -> files)
+				inter.id === chosenInterface.value ||
+				inter.id.toLowerCase().includes(searchValue) ||
+				inter.name.toLowerCase().includes(searchValue),
 		);
 	}
 });
-
-const chosenInterface = syncFieldDetailStoreProperty('field.meta.interface');
 
 const configRow = computed(() => {
 	if (!chosenInterface.value) return null;
